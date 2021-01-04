@@ -1,0 +1,18 @@
+#!/bin/zsh
+wait=2
+clear="\033[H\033[J"
+
+while getopts n: o; do
+    case $o in
+        n)   wait=$OPTARG;;
+        [?]) print >&2 "Usage: $0 [-n wait] command ..." ; exit 1;;
+    esac
+done
+shift $OPTIND-1
+
+while ( true ); do
+    let prompt_x=$COLUMNS-19
+    date="\033[0;${prompt_x}H\033[1;32m "`date +'%Y/%m/%d %H:%M:%S'`"\033[0m"
+    $* |& awk "BEGIN{print \"$clear\" substr(\"$*\",0,$prompt_x) \"$date\"} {print}" | cat
+    sleep $wait
+done
